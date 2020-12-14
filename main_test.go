@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"math/rand"
 	"plugin"
 	"testing"
 )
@@ -67,7 +68,7 @@ func BenchmarkPluginRandInt(b *testing.B) {
 // BenchmarkRandString tests generating a random string without a go plugin
 func BenchmarkRandString(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		RandString(RandInt())
+		RandString(rand.Int())
 	}
 }
 
@@ -91,6 +92,6 @@ func BenchmarkPluginRandString(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		randFunc(RandInt())
+		randFunc(rand.Int())
 	}
 }
