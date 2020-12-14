@@ -2,7 +2,7 @@
 
 I created this project to test the performance of go plugins.
 
-To build the plugin run the folowing
+To build the plugin run the following
 ```bash
 go build -buildmode=plugin -o plugin.so plugin/main.go
 ```
