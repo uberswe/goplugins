@@ -1,8 +1,6 @@
 package plugins
 
 import (
-	"fmt"
-	"os"
 	"plugin"
 	"testing"
 )
@@ -21,8 +19,7 @@ func TestPluginRandInt(t *testing.T) {
 
 	randFunc, ok := randInt.(func() int)
 	if !ok {
-		fmt.Println("unexpected type from module symbol")
-		os.Exit(1)
+		panic("unexpected type from module symbol")
 	}
 
 	randNum := randFunc()
@@ -57,11 +54,43 @@ func BenchmarkPluginRandInt(b *testing.B) {
 
 	randFunc, ok := randInt.(func() int)
 	if !ok {
-		fmt.Println("unexpected type from module symbol")
-		os.Exit(1)
+		panic("unexpected type from module symbol")
 	}
+
+	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		randFunc()
+	}
+}
+
+// BenchmarkRandString tests generating a random string without a go plugin
+func BenchmarkRandString(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		RandString(RandInt())
+	}
+}
+
+// BenchmarkPluginRandString tests generating a random string without a go plugin
+func BenchmarkPluginRandString(b *testing.B) {
+	plug, err := plugin.Open("./plugin.so")
+	if err != nil {
+		panic(err)
+	}
+
+	randString, err := plug.Lookup("RandString")
+	if err != nil {
+		panic(err)
+	}
+
+	randFunc, ok := randString.(func(n int) string)
+	if !ok {
+		panic("unexpected type from module symbol")
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		randFunc(RandInt())
 	}
 }
